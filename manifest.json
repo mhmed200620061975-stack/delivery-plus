@@ -1,0 +1,14 @@
+{
+  "background_color": "#ffffff",
+  "dir": "rtl",
+  "display": "standalone",
+  "name": "دليفري بلس",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "دليفري بلس",
+  "start_url": "/",
+  "theme_color": "#11100e",
+  "id": "delivery-plus",
+  "description": "دليفري بلس للتوصيل السريع - خدمة توصيل سهلة وسريعة.",
+  "lang": "ar"
+}
