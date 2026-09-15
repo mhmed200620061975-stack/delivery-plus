@@ -1,14 +1,22 @@
 {
-  "background_color": "#ffffff",
-  "dir": "rtl",
-  "display": "standalone",
   "name": "دليفري بلس",
-  "orientation": "any",
-  "scope": "/",
   "short_name": "دليفري بلس",
-  "start_url": "/",
-  "theme_color": "#11100e",
-  "id": "delivery-plus",
   "description": "دليفري بلس للتوصيل السريع - خدمة توصيل سهلة وسريعة.",
-  "lang": "ar"
+  "start_url": "/delivery-plus/",
+  "scope": "/delivery-plus/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#11100e",
+  "dir": "rtl",
+  "lang": "ar",
+  "id": "/delivery-plus/",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
