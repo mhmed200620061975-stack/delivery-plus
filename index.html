@@ -1094,7 +1094,10 @@ maxZoom:19,
 attribution:'&copy; OpenStreetMap contributors'
 }
 ).addTo(deliveryMap);
-
+  
+setTimeout(function(){
+  deliveryMap.invalidateSize();
+},500);
 
 /* الضغط على خريطة الاستلام */
 
