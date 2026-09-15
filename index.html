@@ -1,85 +1,1332 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>دليفري بلس</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#11100e">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>دليفري بلس</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#11100e">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
-:root{--bg:#f5f4f0;--dark:#12110e;--gold:#d9ac43;--muted:#77736a;--line:#e7e3da;--card:#fff;--green:#23865a;--red:#c74c48}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Cairo,sans-serif;color:#181713}.app{max-width:560px;margin:auto;min-height:100vh;background:var(--bg);padding-bottom:85px}
-header{background:linear-gradient(145deg,#11100e,#29251c);color:#fff;padding:21px 18px 28px;border-radius:0 0 30px 30px}.brand{display:flex;align-items:center;gap:10px}.brand img{width:46px;height:46px;object-fit:contain;border-radius:13px}.brand b{font-size:20px}.brand small{display:block;color:#c9c3b7;font-size:10px}.hero{margin-top:20px}.hero h1{font-size:29px;margin:0}.hero p{font-size:12px;color:#d6d0c4;margin:5px 0}
-main{padding:16px}.page{display:none}.page.active{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:21px;padding:16px;box-shadow:0 10px 30px rgba(20,18,12,.06);margin-bottom:12px}.section{font-size:17px;margin:19px 2px 10px}.sub{font-size:11px;color:var(--muted);line-height:1.8}.field{margin:11px 0}.field label{font-size:11px;font-weight:700;display:block;margin:0 3px 6px;color:#666158}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid var(--line);background:#faf9f6;border-radius:13px;outline:none;font-family:inherit}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.primary{width:100%;padding:13px;border:0;border-radius:14px;background:var(--dark);color:#fff;font-weight:800}.gold{color:#e8bf59}
-.map{height:125px;border-radius:17px;background:linear-gradient(135deg,#dddcd5,#eeece5);position:relative;overflow:hidden}.map:before{content:"";position:absolute;inset:-20%;background:repeating-linear-gradient(30deg,transparent 0 24px,rgba(255,255,255,.7) 25px 27px),repeating-linear-gradient(115deg,transparent 0 33px,rgba(255,255,255,.55) 34px 36px)}.pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-60%);font-size:38px}.mapbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.mapbtns button,.mini{border:0;border-radius:11px;padding:9px;background:#f3f0e8;font-family:inherit;font-size:10px}
-.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.role{border:1px solid var(--line);background:#fff;border-radius:18px;padding:17px;text-align:center;font-family:inherit}.role b{display:block;margin-top:5px}.role small{color:var(--muted)}.owner{background:var(--dark);color:#fff}.owner small{color:#c9c3b7}
-.order{padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff;margin-bottom:10px}.topline{display:flex;justify-content:space-between;align-items:center}.status{font-size:10px;font-weight:700;padding:5px 9px;border-radius:99px;background:#fff2cd;color:#856217}.done{background:#e5f5ec;color:#24734d}.road{background:#ece8ff;color:#5f4ca4}.cancel{background:#ffe7e6;color:#a64340}.order h3{font-size:13px;margin:9px 0 6px}.order p{font-size:10px;color:#68645c;margin:3px 0}.actions{display:flex;gap:6px;align-items:center;margin-top:10px}.mini{flex:1}.price{font-weight:800;font-size:13px}.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(560px,100%);height:74px;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);padding:7px 13px;z-index:20}.nav button{border:0;background:none;font-family:inherit;font-size:10px;color:#858078}.nav button b{display:block;font-size:20px}.nav .add{background:var(--dark);color:#fff;border-radius:15px;margin:2px 15px}.logout{float:left;background:#2a2721;color:#fff;border:0;border-radius:10px;padding:7px 10px;font-size:10px}.hide{display:none!important}.error{background:#ffe9e7;color:#9e3d39;border-radius:12px;padding:10px;font-size:10px;margin:8px 0;display:none}
-</style></head>
-<body><div class="app">
-<header><div class="brand"><img src="logo.png"><div><b>دليفري بلس</b><small>نظام التوصيل الإلكتروني</small></div></div><div class="hero"><h1>طلبك إحنا نوصله</h1><p>العميل يطلب، وأنت تدير وتحدد السعر وتوصل.</p></div></header>
-<main>
-<section id="auth" class="page active">
-<h2 class="section">الدخول إلى دليفري بلس</h2>
-<div class="card">
-<div id="err" class="error"></div>
-<div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" placeholder="example@email.com"></div>
-<div class="field"><label>كلمة المرور</label><input id="password" type="password" placeholder="كلمة المرور"></div>
-<button class="primary" onclick="login()">تسجيل الدخول</button>
-<p class="sub" style="margin-top:12px">العملاء ينشئون حساباتهم بأنفسهم. حساب المالك تنشئه أنت من لوحة Supabase ولا يظهر للعميل.</p>
+
+:root{
+--bg:#f5f4f0;
+--dark:#12110e;
+--gold:#d9ac43;
+--muted:#77736a;
+--line:#e7e3da;
+--card:#fff;
+--green:#23865a;
+--red:#c74c48
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+background:var(--bg);
+font-family:Cairo,sans-serif;
+color:#181713
+}
+
+.app{
+max-width:560px;
+margin:auto;
+min-height:100vh;
+background:var(--bg);
+padding-bottom:85px
+}
+
+header{
+background:linear-gradient(145deg,#11100e,#29251c);
+color:#fff;
+padding:21px 18px 28px;
+border-radius:0 0 30px 30px
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:10px
+}
+
+.brand img{
+width:46px;
+height:46px;
+object-fit:contain;
+border-radius:13px
+}
+
+.brand b{font-size:20px}
+
+.brand small{
+display:block;
+color:#c9c3b7;
+font-size:10px
+}
+
+.hero{margin-top:20px}
+
+.hero h1{
+font-size:29px;
+margin:0
+}
+
+.hero p{
+font-size:12px;
+color:#d6d0c4;
+margin:5px 0
+}
+
+main{padding:16px}
+
+.page{display:none}
+
+.page.active{display:block}
+
+.card{
+background:#fff;
+border:1px solid var(--line);
+border-radius:21px;
+padding:16px;
+box-shadow:0 10px 30px rgba(20,18,12,.06);
+margin-bottom:12px
+}
+
+.section{
+font-size:17px;
+margin:19px 2px 10px
+}
+
+.sub{
+font-size:11px;
+color:var(--muted);
+line-height:1.8
+}
+
+.field{margin:11px 0}
+
+.field label{
+font-size:11px;
+font-weight:700;
+display:block;
+margin:0 3px 6px;
+color:#666158
+}
+
+.field input,
+.field textarea,
+.field select{
+width:100%;
+padding:12px;
+border:1px solid var(--line);
+background:#faf9f6;
+border-radius:13px;
+outline:none;
+font-family:inherit
+}
+
+.two{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:9px
+}
+
+.primary{
+width:100%;
+padding:13px;
+border:0;
+border-radius:14px;
+background:var(--dark);
+color:#fff;
+font-weight:800
+}
+
+/* الخريطة الحقيقية */
+.real-map{
+height:230px;
+width:100%;
+border-radius:17px;
+overflow:hidden;
+border:1px solid var(--line);
+margin-top:8px;
+z-index:1
+}
+
+.map-title{
+font-size:11px;
+font-weight:700;
+margin:12px 3px 6px;
+color:#666158
+}
+
+.mapbtns{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+margin-top:8px
+}
+
+.mapbtns button,
+.mini{
+border:0;
+border-radius:11px;
+padding:10px;
+background:#f3f0e8;
+font-family:inherit;
+font-size:10px
+}
+
+.mapbtns button:first-child{
+background:var(--dark);
+color:#fff
+}
+
+.role-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.role{
+border:1px solid var(--line);
+background:#fff;
+border-radius:18px;
+padding:17px;
+text-align:center;
+font-family:inherit
+}
+
+.role b{
+display:block;
+margin-top:5px
+}
+
+.role small{color:var(--muted)}
+
+.owner{
+background:var(--dark);
+color:#fff
+}
+
+.owner small{color:#c9c3b7}
+
+.order{
+padding:14px;
+border:1px solid var(--line);
+border-radius:18px;
+background:#fff;
+margin-bottom:10px
+}
+
+.topline{
+display:flex;
+justify-content:space-between;
+align-items:center
+}
+
+.status{
+font-size:10px;
+font-weight:700;
+padding:5px 9px;
+border-radius:99px;
+background:#fff2cd;
+color:#856217
+}
+
+.done{
+background:#e5f5ec;
+color:#24734d
+}
+
+.road{
+background:#ece8ff;
+color:#5f4ca4
+}
+
+.cancel{
+background:#ffe7e6;
+color:#a64340
+}
+
+.order h3{
+font-size:13px;
+margin:9px 0 6px
+}
+
+.order p{
+font-size:10px;
+color:#68645c;
+margin:3px 0
+}
+
+.actions{
+display:flex;
+gap:6px;
+align-items:center;
+margin-top:10px
+}
+
+.mini{flex:1}
+
+.price{
+font-weight:800;
+font-size:13px
+}
+
+.nav{
+position:fixed;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+width:min(560px,100%);
+height:74px;
+background:#fff;
+border-top:1px solid var(--line);
+display:grid;
+grid-template-columns:repeat(3,1fr);
+padding:7px 13px;
+z-index:20
+}
+
+.nav button{
+border:0;
+background:none;
+font-family:inherit;
+font-size:10px;
+color:#858078
+}
+
+.nav button b{
+display:block;
+font-size:20px
+}
+
+.nav .add{
+background:var(--dark);
+color:#fff;
+border-radius:15px;
+margin:2px 15px
+}
+
+.logout{
+float:left;
+background:#2a2721;
+color:#fff;
+border:0;
+border-radius:10px;
+padding:7px 10px;
+font-size:10px
+}
+
+.hide{display:none!important}
+
+.error{
+background:#ffe9e7;
+color:#9e3d39;
+border-radius:12px;
+padding:10px;
+font-size:10px;
+margin:8px 0;
+display:none
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+<div class="brand">
+<img src="logo.png">
+<div>
+<b>دليفري بلس</b>
+<small>نظام التوصيل الإلكتروني</small>
 </div>
+</div>
+
+<div class="hero">
+<h1>طلبك إحنا نوصله</h1>
+<p>العميل يطلب، وأنت تدير وتحدد السعر وتوصل.</p>
+</div>
+</header>
+
+<main>
+
+<section id="auth" class="page active">
+
+<h2 class="section">الدخول إلى دليفري بلس</h2>
+
+<div class="card">
+
+<div id="err" class="error"></div>
+
+<div class="field">
+<label>البريد الإلكتروني</label>
+<input id="email" type="email" placeholder="example@email.com">
+</div>
+
+<div class="field">
+<label>كلمة المرور</label>
+<input id="password" type="password" placeholder="كلمة المرور">
+</div>
+
+<button class="primary" onclick="login()">تسجيل الدخول</button>
+
+<p class="sub" style="margin-top:12px">
+العملاء ينشئون حساباتهم بأنفسهم. حساب المالك تنشئه أنت من لوحة Supabase ولا يظهر للعميل.
+</p>
+
+</div>
+
 <div class="role-grid">
-<button class="role" onclick="signup()"><div style="font-size:25px">👤</div><b>حساب عميل</b><small>إنشاء حساب جديد</small></button>
-<button class="role owner" onclick="showOwnerHelp()"><div style="font-size:25px">🔐</div><b>حساب المالك</b><small>إدارة كاملة</small></button>
+
+<button class="role" onclick="signup()">
+<div style="font-size:25px">👤</div>
+<b>حساب عميل</b>
+<small>إنشاء حساب جديد</small>
+</button>
+
+<button class="role owner" onclick="showOwnerHelp()">
+<div style="font-size:25px">🔐</div>
+<b>حساب المالك</b>
+<small>إدارة كاملة</small>
+</button>
+
 </div>
 </section>
+
 
 <section id="customer" class="page">
-<button class="logout" onclick="logout()">خروج</button><h2 class="section">إنشاء طلب</h2>
+
+<button class="logout" onclick="logout()">خروج</button>
+
+<h2 class="section">إنشاء طلب</h2>
+
 <div class="card">
-<div class="field"><label>اسم المرسل</label><input id="cname"></div><div class="field"><label>رقم المرسل</label><input id="cphone" type="tel"></div>
-<div class="field"><label>اسم المستلم</label><input id="rname"></div><div class="field"><label>رقم المستلم</label><input id="rphone" type="tel"></div>
-<div class="field"><label>مكان الاستلام</label><input id="pickup" placeholder="العنوان أو الإحداثيات"></div>
-<div class="map"><div class="pin">📍</div></div><div class="field"><label>العنوان يدوياً</label><input id="pickup_manual" placeholder="اكتب عنوان مكان الاستلام بالتفصيل"></div>
-<div class="field"><label>مكان التسليم</label><input id="delivery" placeholder="العنوان أو الإحداثيات"></div>
-<div class="map"><div class="pin">📍</div></div><div class="field"><label>العنوان يدوياً</label><input id="delivery_manual" placeholder="اكتب عنوان مكان التسليم بالتفصيل"></div>
-<div class="field"><label>ملاحظات</label><textarea id="note" rows="3"></textarea></div>
+
+<div class="field">
+<label>اسم المرسل</label>
+<input id="cname">
+</div>
+
+<div class="field">
+<label>رقم المرسل</label>
+<input id="cphone" type="tel">
+</div>
+
+<div class="field">
+<label>اسم المستلم</label>
+<input id="rname">
+</div>
+
+<div class="field">
+<label>رقم المستلم</label>
+<input id="rphone" type="tel">
+</div>
+
+
+<!-- مكان الاستلام -->
+
+<div class="map-title">📍 مكان الاستلام</div>
+
+<div id="pickupMap" class="real-map"></div>
+
+<div class="mapbtns">
+<button onclick="locateMe('pickup')">📱 موقعي الحالي</button>
+<button onclick="clearMapPoint('pickup')">✖ مسح الموقع</button>
+</div>
+
+<div class="field">
+<label>الإحداثيات أو العنوان</label>
+<input id="pickup" placeholder="اضغط على الخريطة أو استخدم موقعي الحالي">
+</div>
+
+<div class="field">
+<label>العنوان يدوياً</label>
+<input id="pickup_manual" placeholder="اكتب عنوان مكان الاستلام بالتفصيل">
+</div>
+
+
+<!-- مكان التسليم -->
+
+<div class="map-title">📌 مكان التسليم</div>
+
+<div id="deliveryMap" class="real-map"></div>
+
+<div class="mapbtns">
+<button onclick="locateMe('delivery')">📱 موقعي الحالي</button>
+<button onclick="clearMapPoint('delivery')">✖ مسح الموقع</button>
+</div>
+
+<div class="field">
+<label>الإحداثيات أو العنوان</label>
+<input id="delivery" placeholder="اضغط على الخريطة أو استخدم موقعي الحالي">
+</div>
+
+<div class="field">
+<label>العنوان يدوياً</label>
+<input id="delivery_manual" placeholder="اكتب عنوان مكان التسليم بالتفصيل">
+</div>
+
+
+<div class="field">
+<label>ملاحظات</label>
+<textarea id="note" rows="3"></textarea>
+</div>
+
 <button class="primary" onclick="createOrder()">إرسال الطلب</button>
-</div><h2 class="section">طلباتي</h2><div id="myOrders"></div>
+
+</div>
+
+<h2 class="section">طلباتي</h2>
+
+<div id="myOrders"></div>
+
 </section>
 
+
 <section id="owner" class="page">
-<button class="logout" onclick="logout()">خروج</button><h2 class="section">لوحة المالك</h2>
-<div class="card"><b>تحكم كامل بالطلبات</b><p class="sub">الطلبات تصل إلى حسابك من أجهزة العملاء. أنت وحدك تحدد السعر وتغير حالة التوصيل وتفتح المواقع.</p></div>
-<div class="two"><div class="card" style="text-align:center"><b id="total">0</b><div class="sub">كل الطلبات</div></div><div class="card" style="text-align:center"><b id="doneCount">0</b><div class="sub">تم التسليم</div></div></div>
-<h2 class="section">الطلبات الواردة</h2><div id="allOrders"></div>
+
+<button class="logout" onclick="logout()">خروج</button>
+
+<h2 class="section">لوحة المالك</h2>
+
+<div class="card">
+<b>تحكم كامل بالطلبات</b>
+<p class="sub">
+الطلبات تصل إلى حسابك من أجهزة العملاء. أنت وحدك تحدد السعر وتغير حالة التوصيل وتفتح المواقع.
+</p>
+</div>
+
+<div class="two">
+
+<div class="card" style="text-align:center">
+<b id="total">0</b>
+<div class="sub">كل الطلبات</div>
+</div>
+
+<div class="card" style="text-align:center">
+<b id="doneCount">0</b>
+<div class="sub">تم التسليم</div>
+</div>
+
+</div>
+
+<h2 class="section">الطلبات الواردة</h2>
+
+<div id="allOrders"></div>
+
 </section>
+
 </main>
-<nav id="nav" class="nav hide"><button onclick="home()"><b>⌂</b>الرئيسية</button><button class="add" onclick="newCustomerOrder()"><b>＋</b>طلب جديد</button><button onclick="logout()"><b>⇥</b>خروج</button></nav>
+
+
+<nav id="nav" class="nav hide">
+
+<button onclick="home()">
+<b>⌂</b>
+الرئيسية
+</button>
+
+<button class="add" onclick="newCustomerOrder()">
+<b>＋</b>
+طلب جديد
+</button>
+
+<button onclick="logout()">
+<b>⇥</b>
+خروج
+</button>
+
+</nav>
+
+
 <script>
+
 const SUPABASE_URL=window.DP_SUPABASE_URL;
 const SUPABASE_ANON_KEY=window.DP_SUPABASE_ANON_KEY;
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-let user=null, profile=null;
-const labels={new:'بانتظار الاستلام',picked:'تم الاستلام',road:'جاري التوصيل',done:'تم التسليم',cancel:'ملغى'};
-function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');scrollTo(0,0)}
-function msg(t){const x=document.getElementById('err');x.textContent=t;x.style.display='block'}
-function clearMsg(){document.getElementById('err').style.display='none'}
-async function login(){clearMsg();try{let {data,error}=await sb.auth.signInWithPassword({email:v('email'),password:v('password')});if(error)throw error;await boot(data.user)}catch(e){msg(e.message||'تعذر تسجيل الدخول')}}
-async function signup(){clearMsg();let email=v('email'),password=v('password');if(!email||password.length<6){msg('أدخل بريدًا صحيحًا وكلمة مرور من 6 أحرف على الأقل');return}try{let {data,error}=await sb.auth.signUp({email,password});if(error)throw error;alert('تم إنشاء الحساب. إذا كان تأكيد البريد مفعلاً افتح رسالة التأكيد ثم سجل الدخول.')}catch(e){msg(e.message)}}
-async function boot(u){user=u;let {data,error}=await sb.from('profiles').select('role').eq('id',u.id).single();if(error)throw error;profile=data;document.getElementById('nav').classList.remove('hide');show(profile.role==='owner'?'owner':'customer');await render()}
-async function logout(){await sb.auth.signOut();user=null;profile=null;document.getElementById('nav').classList.add('hide');show('auth')}
-async function render(){if(!user)return;if(profile.role==='owner')await ownerOrders();else await customerOrders()}
-async function createOrder(){let pickup=v('pickup_manual')||v('pickup');let delivery=v('delivery_manual')||v('delivery');let o={customer_name:v('cname'),customer_phone:v('cphone'),receiver_name:v('rname'),receiver_phone:v('rphone'),pickup_address:pickup,delivery_address:delivery,notes:v('note'),customer_id:user.id,status:'new'};if(!o.customer_name||!o.customer_phone||!o.receiver_name||!o.pickup_address||!o.delivery_address){alert('أكمل بيانات الطلب');return}let {error}=await sb.from('orders').insert(o);if(error){alert(error.message);return}alert('تم إرسال الطلب إلى دليفري بلس');await customerOrders()}
-async function customerOrders(){let {data,error}=await sb.from('orders').select('*').eq('customer_id',user.id).order('created_at',{ascending:false});if(error){alert(error.message);return}document.getElementById('myOrders').innerHTML=data.map(card).join('')||'<div class="card sub">لا توجد طلبات بعد.</div>'}
-async function ownerOrders(){let {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false});if(error){alert(error.message);return}document.getElementById('total').textContent=data.length;document.getElementById('doneCount').textContent=data.filter(x=>x.status==='done').length;document.getElementById('allOrders').innerHTML=data.map(o=>card(o,true)).join('')||'<div class="card sub">لا توجد طلبات.</div>'}
-function card(o,owner=false){let price=o.delivery_price==null?'السعر غير محدد':Number(o.delivery_price).toLocaleString('ar-IQ')+' د.ع';return `<div class="order"><div class="topline"><span>#${o.id.slice(0,8)}</span><span class="status ${o.status==='done'?'done':o.status==='road'?'road':o.status==='cancel'?'cancel':''}">${labels[o.status]}</span></div><h3>${e(o.customer_name)} ← ${e(o.receiver_name)}</h3><p>📍 الاستلام: ${e(o.pickup_address)}</p><p>📌 التسليم: ${e(o.delivery_address)}</p><p>📞 ${e(o.customer_phone)}</p><div class="actions"><span class="price">${price}</span>${owner?`<button class="mini" onclick="setPrice('${o.id}')">💰 السعر</button><button class="mini" onclick="setStatus('${o.id}')">🔄 الحالة</button>`:''}<button class="mini" onclick="route('${encodeURIComponent(o.pickup_address)}','${encodeURIComponent(o.delivery_address)}')">🗺️</button></div></div>`}
-async function setPrice(id){let x=prompt('أجرة التوصيل بالدينار العراقي:');if(x===null)return;let n=Number(x);if(!Number.isFinite(n)||n<0){alert('السعر غير صحيح');return}let {error}=await sb.from('orders').update({delivery_price:n}).eq('id',id);if(error)alert(error.message);else await ownerOrders()}
-async function setStatus(id){let s=prompt('اكتب: new أو picked أو road أو done أو cancel','road');if(!labels[s]){if(s!==null)alert('الحالة غير صحيحة');return}let {error}=await sb.from('orders').update({status:s}).eq('id',id);if(error)alert(error.message);else await ownerOrders()}
-function newCustomerOrder(){if(profile?.role==='owner')return alert('إضافة الطلبات للعملاء من حساباتهم. يمكنك لاحقًا إضافة شاشة طلب يدوي للمالك.');show('customer')}
-function home(){show(profile?.role==='owner'?'owner':'customer');render()}
-function showOwnerHelp(){alert('حساب المالك يتم إنشاؤه مرة واحدة من Authentication داخل Supabase، ثم تجعل دوره owner في جدول profiles. لا تضع كلمة مرور المالك داخل ملفات الموقع.')}
-function v(id){return document.getElementById(id).value.trim()}function e(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function gps(id){if(!navigator.geolocation)return alert('المتصفح لا يدعم الموقع');navigator.geolocation.getCurrentPosition(p=>document.getElementById(id).value=p.coords.latitude.toFixed(6)+', '+p.coords.longitude.toFixed(6),()=>alert('تعذر تحديد الموقع'))}
-function gmaps(id){let a=v(id);if(a)location.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a);else alert('اكتب العنوان أولاً')}
-function route(a,b){location.href='https://www.google.com/maps/dir/?api=1&origin='+a+'&destination='+b}
-sb.auth.getSession().then(({data})=>{if(data.session)boot(data.session.user).catch(e=>{console.error(e);show('auth')})})
-</script></div></body></html>
+
+const sb=supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
+);
+
+let user=null;
+let profile=null;
+
+let pickupMap=null;
+let deliveryMap=null;
+
+let pickupMarker=null;
+let deliveryMarker=null;
+
+const labels={
+new:'بانتظار الاستلام',
+picked:'تم الاستلام',
+road:'جاري التوصيل',
+done:'تم التسليم',
+cancel:'ملغى'
+};
+
+
+/* إظهار الصفحات */
+
+function show(id){
+
+document.querySelectorAll('.page')
+.forEach(x=>x.classList.remove('active'));
+
+document.getElementById(id)
+.classList.add('active');
+
+scrollTo(0,0);
+
+if(id==='customer'){
+setTimeout(()=>{
+initMaps();
+
+if(pickupMap)
+pickupMap.invalidateSize();
+
+if(deliveryMap)
+deliveryMap.invalidateSize();
+
+},200);
+}
+
+}
+
+
+/* رسائل */
+
+function msg(t){
+const x=document.getElementById('err');
+x.textContent=t;
+x.style.display='block'
+}
+
+function clearMsg(){
+document.getElementById('err').style.display='none'
+}
+
+
+/* تسجيل الدخول */
+
+async function login(){
+
+clearMsg();
+
+try{
+
+let {data,error}=await sb.auth.signInWithPassword({
+email:v('email'),
+password:v('password')
+});
+
+if(error)throw error;
+
+await boot(data.user);
+
+}catch(e){
+
+msg(e.message||'تعذر تسجيل الدخول')
+
+}
+
+}
+
+
+/* إنشاء الحساب */
+
+async function signup(){
+
+clearMsg();
+
+let email=v('email');
+let password=v('password');
+
+if(!email||password.length<6){
+
+msg('أدخل بريدًا صحيحًا وكلمة مرور من 6 أحرف على الأقل');
+
+return
+
+}
+
+try{
+
+let {data,error}=await sb.auth.signUp({
+email,
+password
+});
+
+if(error)throw error;
+
+alert('تم إنشاء الحساب. يمكنك الآن تسجيل الدخول.');
+
+}catch(e){
+
+msg(e.message)
+
+}
+
+}
+
+
+/* تشغيل الحساب */
+
+async function boot(u){
+
+user=u;
+
+let {data,error}=await sb
+.from('profiles')
+.select('role')
+.eq('id',u.id)
+.single();
+
+if(error)throw error;
+
+profile=data;
+
+document.getElementById('nav')
+.classList.remove('hide');
+
+show(profile.role==='owner'?'owner':'customer');
+
+await render()
+
+}
+
+
+/* تسجيل الخروج */
+
+async function logout(){
+
+await sb.auth.signOut();
+
+user=null;
+profile=null;
+
+document.getElementById('nav')
+.classList.add('hide');
+
+show('auth')
+
+}
+
+
+/* العرض */
+
+async function render(){
+
+if(!user)return;
+
+if(profile.role==='owner')
+await ownerOrders();
+else
+await customerOrders()
+
+}
+
+
+/* إنشاء الطلب */
+
+async function createOrder(){
+
+let pickup=v('pickup_manual')||v('pickup');
+
+let delivery=v('delivery_manual')||v('delivery');
+
+let o={
+
+customer_name:v('cname'),
+customer_phone:v('cphone'),
+
+receiver_name:v('rname'),
+receiver_phone:v('rphone'),
+
+pickup_address:pickup,
+delivery_address:delivery,
+
+notes:v('note'),
+
+customer_id:user.id,
+
+status:'new'
+
+};
+
+if(
+!o.customer_name||
+!o.customer_phone||
+!o.receiver_name||
+!o.pickup_address||
+!o.delivery_address
+){
+
+alert('أكمل بيانات الطلب');
+
+return
+
+}
+
+let {error}=await sb
+.from('orders')
+.insert(o);
+
+if(error){
+
+alert(error.message);
+
+return
+
+}
+
+alert('تم إرسال الطلب إلى دليفري بلس');
+
+await customerOrders()
+
+}
+
+
+/* طلبات العميل */
+
+async function customerOrders(){
+
+let {data,error}=await sb
+.from('orders')
+.select('*')
+.eq('customer_id',user.id)
+.order('created_at',{ascending:false});
+
+if(error){
+
+alert(error.message);
+
+return
+
+}
+
+document.getElementById('myOrders')
+.innerHTML=
+data.map(card).join('')
+||
+'<div class="card sub">لا توجد طلبات بعد.</div>'
+
+}
+
+
+/* طلبات المالك */
+
+async function ownerOrders(){
+
+let {data,error}=await sb
+.from('orders')
+.select('*')
+.order('created_at',{ascending:false});
+
+if(error){
+
+alert(error.message);
+
+return
+
+}
+
+document.getElementById('total').textContent=data.length;
+
+document.getElementById('doneCount').textContent=
+data.filter(x=>x.status==='done').length;
+
+document.getElementById('allOrders')
+.innerHTML=
+data.map(o=>card(o,true)).join('')
+||
+'<div class="card sub">لا توجد طلبات.</div>'
+
+}
+
+
+/* بطاقة الطلب */
+
+function card(o,owner=false){
+
+let price=o.delivery_price==null
+?'السعر غير محدد'
+:Number(o.delivery_price).toLocaleString('ar-IQ')+' د.ع';
+
+return `
+<div class="order">
+
+<div class="topline">
+
+<span>#${o.id.slice(0,8)}</span>
+
+<span class="status ${
+o.status==='done'?'done':
+o.status==='road'?'road':
+o.status==='cancel'?'cancel':''
+}">
+${labels[o.status]}
+</span>
+
+</div>
+
+<h3>
+${e(o.customer_name)}
+←
+${e(o.receiver_name)}
+</h3>
+
+<p>📍 الاستلام: ${e(o.pickup_address)}</p>
+
+<p>📌 التسليم: ${e(o.delivery_address)}</p>
+
+<p>📞 ${e(o.customer_phone)}</p>
+
+<div class="actions">
+
+<span class="price">${price}</span>
+
+${owner?`
+<button class="mini" onclick="setPrice('${o.id}')">
+💰 السعر
+</button>
+
+<button class="mini" onclick="setStatus('${o.id}')">
+🔄 الحالة
+</button>
+`:''}
+
+<button class="mini"
+onclick="route(
+'${encodeURIComponent(o.pickup_address)}',
+'${encodeURIComponent(o.delivery_address)}'
+)">
+🗺️
+</button>
+
+</div>
+
+</div>
+`
+
+}
+
+
+/* السعر */
+
+async function setPrice(id){
+
+let x=prompt('أجرة التوصيل بالدينار العراقي:');
+
+if(x===null)return;
+
+let n=Number(x);
+
+if(!Number.isFinite(n)||n<0){
+
+alert('السعر غير صحيح');
+
+return
+
+}
+
+let {error}=await sb
+.from('orders')
+.update({delivery_price:n})
+.eq('id',id);
+
+if(error)
+alert(error.message);
+else
+await ownerOrders()
+
+}
+
+
+/* الحالة */
+
+async function setStatus(id){
+
+let s=prompt(
+'اكتب: new أو picked أو road أو done أو cancel',
+'road'
+);
+
+if(!labels[s]){
+
+if(s!==null)
+alert('الحالة غير صحيحة');
+
+return
+
+}
+
+let {error}=await sb
+.from('orders')
+.update({status:s})
+.eq('id',id);
+
+if(error)
+alert(error.message);
+else
+await ownerOrders()
+
+}
+
+
+/* الطلب الجديد */
+
+function newCustomerOrder(){
+
+if(profile?.role==='owner')
+return alert(
+'إضافة الطلبات للعملاء من حساباتهم. يمكنك لاحقًا إضافة شاشة طلب يدوي للمالك.'
+);
+
+show('customer')
+
+}
+
+
+/* الرئيسية */
+
+function home(){
+
+show(profile?.role==='owner'?'owner':'customer');
+
+render()
+
+}
+
+
+/* مساعدة المالك */
+
+function showOwnerHelp(){
+
+alert(
+'حساب المالك يتم إنشاؤه مرة واحدة من Authentication داخل Supabase، ثم تجعل دوره owner في جدول profiles. لا تضع كلمة مرور المالك داخل ملفات الموقع.'
+)
+
+}
+
+
+/* قراءة الحقول */
+
+function v(id){
+
+return document.getElementById(id).value.trim()
+
+}
+
+
+/* حماية النص */
+
+function e(s){
+
+return String(s||'')
+.replace(
+/[&<>"']/g,
+m=>({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#039;'
+}[m])
+)
+
+}
+
+
+/* إنشاء الخرائط */
+
+function initMaps(){
+
+if(pickupMap&&deliveryMap)
+return;
+
+
+/* مركز ابتدائي داخل العراق */
+
+const iraqCenter=[33.2,44.4];
+
+
+/* خريطة الاستلام */
+
+pickupMap=L.map('pickupMap')
+.setView(iraqCenter,6);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+maxZoom:19,
+attribution:'&copy; OpenStreetMap contributors'
+}
+).addTo(pickupMap);
+
+
+/* خريطة التسليم */
+
+deliveryMap=L.map('deliveryMap')
+.setView(iraqCenter,6);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+maxZoom:19,
+attribution:'&copy; OpenStreetMap contributors'
+}
+).addTo(deliveryMap);
+
+
+/* الضغط على خريطة الاستلام */
+
+pickupMap.on('click',function(e){
+
+setMapPoint(
+'pickup',
+e.latlng
+)
+
+});
+
+
+/* الضغط على خريطة التسليم */
+
+deliveryMap.on('click',function(e){
+
+setMapPoint(
+'delivery',
+e.latlng
+)
+
+});
+
+}
+
+
+/* تحديد نقطة على الخريطة */
+
+function setMapPoint(type,latlng){
+
+let text=
+latlng.lat.toFixed(6)+
+', '+
+latlng.lng.toFixed(6);
+
+
+if(type==='pickup'){
+
+if(pickupMarker){
+
+pickupMarker.setLatLng(latlng);
+
+}else{
+
+pickupMarker=
+L.marker(latlng)
+.addTo(pickupMap);
+
+}
+
+document.getElementById('pickup').value=text;
+
+pickupMap.setView(latlng,16);
+
+}else{
+
+if(deliveryMarker){
+
+deliveryMarker.setLatLng(latlng);
+
+}else{
+
+deliveryMarker=
+L.marker(latlng)
+.addTo(deliveryMap);
+
+}
+
+document.getElementById('delivery').value=text;
+
+deliveryMap.setView(latlng,16);
+
+}
+
+}
+
+
+/* موقعي الحالي */
+
+function locateMe(type){
+
+if(!navigator.geolocation){
+
+alert('المتصفح لا يدعم تحديد الموقع');
+
+return
+
+}
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+const lat=position.coords.latitude;
+const lng=position.coords.longitude;
+
+const latlng={
+lat:lat,
+lng:lng
+};
+
+setMapPoint(type,latlng);
+
+},
+
+function(){
+
+alert(
+'تعذر تحديد موقعك. تأكد من السماح للموقع في الهاتف ثم حاول مرة أخرى.'
+)
+
+},
+
+{
+enableHighAccuracy:true,
+timeout:15000,
+maximumAge:0
+}
+
+)
+
+}
+
+
+/* مسح النقطة */
+
+function clearMapPoint(type){
+
+if(type==='pickup'){
+
+if(pickupMarker){
+
+pickupMap.removeLayer(pickupMarker);
+
+pickupMarker=null;
+
+}
+
+document.getElementById('pickup').value='';
+
+pickupMap.setView([33.2,44.4],6);
+
+}else{
+
+if(deliveryMarker){
+
+deliveryMap.removeLayer(deliveryMarker);
+
+deliveryMarker=null;
+
+}
+
+document.getElementById('delivery').value='';
+
+deliveryMap.setView([33.2,44.4],6);
+
+}
+
+}
+
+
+/* GPS قديم */
+
+function gps(id){
+
+if(!navigator.geolocation)
+return alert('المتصفح لا يدعم الموقع');
+
+navigator.geolocation.getCurrentPosition(
+
+p=>
+document.getElementById(id).value=
+p.coords.latitude.toFixed(6)+
+', '+
+p.coords.longitude.toFixed(6),
+
+()=>
+alert('تعذر تحديد الموقع')
+
+)
+
+}
+
+
+/* فتح Google Maps */
+
+function gmaps(id){
+
+let a=v(id);
+
+if(a)
+
+location.href=
+'https://www.google.com/maps/search/?api=1&query='+
+encodeURIComponent(a);
+
+else
+
+alert('اكتب العنوان أولاً')
+
+}
+
+
+/* الطريق */
+
+function route(a,b){
+
+location.href=
+'https://www.google.com/maps/dir/?api=1&origin='+
+a+
+'&destination='+
+b
+
+}
+
+
+/* جلسة Supabase */
+
+sb.auth.getSession()
+.then(({data})=>{
+
+if(data.session)
+
+boot(data.session.user)
+.catch(e=>{
+
+console.error(e);
+
+show('auth')
+
+})
+
+});
+
+</script>
+
+</div>
+</body>
+</html>
